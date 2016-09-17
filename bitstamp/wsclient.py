@@ -1,4 +1,3 @@
-import sys #debug line
 import pusherclient
 
 class BitstampWebsocketClient(object):
@@ -19,8 +18,7 @@ class BitstampWebsocketClient(object):
                 self.channels[channel + "_" + pair] = []
         self.pusher = pusherclient.Pusher(self.key)
         self.pusher.connect()
-        self.received = [] #debug variable
-
+        
     def subscribe(self, stream, base, quote):
         if base + quote != 'btcusd':
             fullstream = stream + "_" + base + quote
@@ -32,24 +30,27 @@ class BitstampWebsocketClient(object):
                 event.bind(message,
                            getattr(self, stream),
                            kwargs={"base": base,
-                                   "quote": quote})
+                                   "quote": quote,
+                                   "message_type": message})
 
     def live_trades(self, message, base=None, quote=None):
         """trade:
            id, amount, price, type, timestamp, buy_order_id, sell_order_id"""
-        sys.stdout(base + quote + ": " + message)
+        
 
     def order_book(self, message, base=None, quote=None):
         """data:
            bids, asks"""
-        sys.stdout(base + quote + ": " + message)
+        
 
     def diff_order_book(self, message, base=None, quote=None):
         """data:
            bids, asks"""
-        sys.stdout(base + quote + ": " + message)
+        
 
-    def live_orders(self, message, base=None, quote=None):
+    def live_orders(self, message, base=None, quote=None, messagetype=None):
         """order_created, order_changed, order_deleted:
            id, amount, price, order_type, datetime"""
-        sys.stdout(base + quote + ": " + message)
+        if messagetype = "order_created":
+        if messagetype = "order_changed":
+        if messagetype = "order_deleted":
