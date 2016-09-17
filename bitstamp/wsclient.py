@@ -1,3 +1,4 @@
+from decimal import Decimal
 import pusherclient
 
 class BitstampWebsocketClient(object):
@@ -16,9 +17,10 @@ class BitstampWebsocketClient(object):
             for pair in ["btceur",
                          "eurusd"]:
                 self.channels[channel + "_" + pair] = []
+        #TODO initialise all possible data structures
         self.pusher = pusherclient.Pusher(self.key)
         self.pusher.connect()
-        
+
     def subscribe(self, stream, base, quote):
         if base + quote != 'btcusd':
             fullstream = stream + "_" + base + quote
@@ -36,21 +38,28 @@ class BitstampWebsocketClient(object):
     def live_trades(self, message, base=None, quote=None):
         """trade:
            id, amount, price, type, timestamp, buy_order_id, sell_order_id"""
-        
+        self.lastprice[base][quote] = Decimal(json.loads(message)[price])
 
     def order_book(self, message, base=None, quote=None):
         """data:
            bids, asks"""
-        
+        self.orderbook[base][quote] = json.loads(message)
 
     def diff_order_book(self, message, base=None, quote=None):
         """data:
            bids, asks"""
-        
+        self.diffmessage = json.loads(message)
+        todo = """implement a dict that has the price as index, and the side
+                  and size as attribute"""
 
     def live_orders(self, message, base=None, quote=None, messagetype=None):
         """order_created, order_changed, order_deleted:
            id, amount, price, order_type, datetime"""
         if messagetype = "order_created":
+            self.openorders[base][quote]["price"][message["price"] = message
+            #TODO append if already present, set list and append if not present
+            self.openorders[base][quote]["id"][message["id"]] = message
         if messagetype = "order_changed":
+            #TODO try except keyerror
         if messagetype = "order_deleted":
+            #TODO try except keyerror
