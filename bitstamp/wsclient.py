@@ -42,6 +42,10 @@ class BitstampWebsocketClient(object):
                            kwargs={"base": base,
                                    "quote": quote,
                                    "message_type": message})
+        if stream == "diff_order_book":
+            orderbook = json.loads(requests.get( #TODO base quote here
+                                   "https://www.bitstamp.net/api/order_book/")
+            self.orderbook[base][quote] = orderbook
 
     def live_trades(self, message, base=None, quote=None):
         """trade:
@@ -49,7 +53,10 @@ class BitstampWebsocketClient(object):
         self.lastprice[base][quote] = Decimal(message[price])
 
     def order_book(self, message, base=None, quote=None):
-        """data:
+        """Users should subscribe to either order_book or diff_order_book.
+           order_book is a bit more accurate, but diff_order_book is probably
+           quicker.
+           data:
            bids, asks"""
         self.orderbook[base][quote] = message
 
