@@ -1,6 +1,9 @@
 # bitstamp-python-websocket-client
 *.html
 
+# Emacs buffers
+\#*\#
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

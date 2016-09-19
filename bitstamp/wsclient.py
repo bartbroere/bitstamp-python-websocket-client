@@ -1,4 +1,4 @@
-from decimal import Decimal
+#from decimal import Decimal
 import pusherclient
 
 class BitstampWebsocketClient(object):
@@ -51,7 +51,7 @@ class BitstampWebsocketClient(object):
     def live_trades(self, message, base=None, quote=None, *args, **kwargs):
         """trade:
            id, amount, price, type, timestamp, buy_order_id, sell_order_id"""
-        self.lastprice[base][quote] = Decimal(message[price])
+        self.lastprice[base][quote] = str(message["price"])
 
     def order_book(self, message, base=None, quote=None, *args, **kwargs):
         """Users should subscribe to either order_book or diff_order_book.
@@ -82,6 +82,14 @@ class BitstampWebsocketClient(object):
             self.openorders[base][quote]["id"][message["id"]] = message
         if messagetype == "order_changed":
             self.openorders[base][quote]["id"][message["id"]] = message
+            i = 0
+            for order in self.openorders[base][quote]["price"][
+                                         message["price"]]:
+                if order["id"] == message["id"]:
+                    self.openorders[base][quote]["price"][
+                                    message["price"]][i] = message
+                i += 1
+            self.openorders[base][quote]["price"]
         if messagetype == "order_deleted":
             try: del self.openorders[base][quote]["id"][message["id"]]
             except KeyError: pass
@@ -91,6 +99,6 @@ class BitstampWebsocketClient(object):
                                              message["price"]]:
                     if order["id"] == message["id"]:
                         del self.openorders[base][quote]["price"][
-                                             message["price"]][i]
+                                            message["price"]][i]
                     i += 1
             except KeyError: pass
