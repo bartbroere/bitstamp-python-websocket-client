@@ -18,8 +18,8 @@ class BitstampWebsocketClient(object):
                          "eurusd"]:
                 self.channels[channel + "_" + pair] = []
         self.orderbook = {"btc": {"eur": None,
-                                  "usd": None
-                          "eur": {"usd": None}
+                                  "usd": None},
+                          "eur": {"usd": None}}
         self.lastprice = self.orderbook
         self.openorders = self.orderbook
         for base in self.openorders.keys():
@@ -41,18 +41,19 @@ class BitstampWebsocketClient(object):
                            getattr(self, stream),
                            kwargs={"base": base,
                                    "quote": quote,
-                                   "message_type": message})
+                                   "message_type": message},
+                           decode_json=True)
         if stream == "diff_order_book":
             orderbook = json.loads(requests.get( #TODO base quote here
-                                   "https://www.bitstamp.net/api/order_book/")
+                                   "https://www.bitstamp.net/api/order_book/"))
             self.orderbook[base][quote] = orderbook
 
-    def live_trades(self, message, base=None, quote=None):
+    def live_trades(self, message, base=None, quote=None, *args, **kwargs):
         """trade:
            id, amount, price, type, timestamp, buy_order_id, sell_order_id"""
         self.lastprice[base][quote] = Decimal(message[price])
 
-    def order_book(self, message, base=None, quote=None):
+    def order_book(self, message, base=None, quote=None, *args, **kwargs):
         """Users should subscribe to either order_book or diff_order_book.
            order_book is a bit more accurate, but diff_order_book is probably
            quicker.
@@ -60,7 +61,7 @@ class BitstampWebsocketClient(object):
            bids, asks"""
         self.orderbook[base][quote] = message
 
-    def diff_order_book(self, message, base=None, quote=None):
+    def diff_order_book(self, message, base=None, quote=None, *args, **kwargs):
         """data:
            bids, asks"""
         self.diffmessage = message
@@ -68,19 +69,20 @@ class BitstampWebsocketClient(object):
                   and size as attribute, and copy the logic from the example
                   at bitstamp.net/websocket"""
 
-    def live_orders(self, message, base=None, quote=None, messagetype=None):
+    def live_orders(self, message, base=None, quote=None, messagetype=None,
+                    *args, **kwargs):
         """order_created, order_changed, order_deleted:
            id, amount, price, order_type, datetime"""
-        if messagetype = "order_created":
+        if messagetype == "order_created":
             self.openorders[base][quote]["price"][message["price"]] = message
-            if message["price"] in self.openorders[base][quote]["price"]::
+            if message["price"] in self.openorders[base][quote]["price"]:
                 self.openorders[base][quote]["price"].append(message)
             else:
                 self.openorders[base][quote]["price"] = [message]
             self.openorders[base][quote]["id"][message["id"]] = message
-        if messagetype = "order_changed":
-            #TODO try except keyerror
-        if messagetype = "order_deleted":
+        if messagetype == "order_changed":
+            self.openorders[base][quote]["id"][message["id"]] = message
+        if messagetype == "order_deleted":
             try: del self.openorders[base][quote]["id"][message["id"]]
             except KeyError: pass
             try:
