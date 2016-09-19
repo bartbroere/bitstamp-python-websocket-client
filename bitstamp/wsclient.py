@@ -41,7 +41,7 @@ class BitstampWebsocketClient(object):
                            getattr(self, stream),
                            kwargs={"base": base,
                                    "quote": quote,
-                                   "message_type": message},
+                                   "messagetype": message},
                            decode_json=True)
         if stream == "diff_order_book":
             orderbook = json.loads(requests.get( #TODO base quote here
@@ -73,12 +73,12 @@ class BitstampWebsocketClient(object):
                     *args, **kwargs):
         """order_created, order_changed, order_deleted:
            id, amount, price, order_type, datetime"""
+        message["price"] = str(message["price"])
         if messagetype == "order_created":
-            self.openorders[base][quote]["price"][message["price"]] = message
-            if message["price"] in self.openorders[base][quote]["price"]:
-                self.openorders[base][quote]["price"].append(message)
-            else:
-                self.openorders[base][quote]["price"] = [message]
+            if message["price"] not in self.openorders[base][quote]["price"]:
+                self.openorders[base][quote]["price"][message["price"]] = []
+            self.openorders[base][quote]["price"][message["price"]].append(
+                                                                message)
             self.openorders[base][quote]["id"][message["id"]] = message
         if messagetype == "order_changed":
             self.openorders[base][quote]["id"][message["id"]] = message
