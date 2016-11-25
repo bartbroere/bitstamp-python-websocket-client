@@ -9,7 +9,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f::
 
 setup(
     name="bitstamp-websocket-client",
-    version="2016.10",
+    version="2016.11",
     description="Client for the Bitstamp.net websocket API",
     url="https://github.com/bartbroere/bitstamp-python-websocket-client/",
     author="Bart Broere",
@@ -22,6 +22,6 @@ setup(
                  "Programming Language :: Python :: 3",
                  "Programming Language :: Python :: 3.5",],
     keywords="bitstamp bitstamp.net websocket python client pusher bitcoin exchange",
-    packages=["bitstamp"], #TODO try whether this is allowed, or collides with the HTTP version of the Bitstamp client
-    install_requires=["pythonpusherclient"], #TODO: or start own branch if changes not published
+    packages=["bitstamp"],
+    install_requires=["pusherclientb"],
 )
